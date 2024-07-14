@@ -2,7 +2,6 @@
 import ListTask from '@/components/ListTask/ListTask'
 import { iUser } from '@/interfaces'
 import axios from 'axios'
-import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import style from './about.module.scss'
 
@@ -21,6 +20,7 @@ const About: React.FC = () => {
 	const [follower, setFollower] = useState({})
 	const [active, setActive] = useState<boolean>(false)
 	const [showListTask, setShowListTask] = useState<any>({})
+
 
 	async function authUser() {
 		const result = await axios.get(`http://localhost:5000/user/${userParams.id}`)

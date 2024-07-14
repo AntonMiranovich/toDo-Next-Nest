@@ -30,7 +30,10 @@ const Header: React.FC = () => {
 						))}
 					</div>
 
-					<button className={style.btn} onClick={() => window.location.href = `/`}>
+					<button className={style.btn} onClick={() => {
+						localStorage.clear();
+						window.location.href = `/`
+					}}>
 						Exit
 					</button>
 				</div>
