@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { FollowerModule } from './follower/follower.module';
+import { TaskModule } from './task/task.module';
 import { UserModule } from './user/user.module';
 import entities from './utils/typeorm';
 
@@ -11,6 +13,8 @@ let envFilePath = '.env.development';
   imports: [
     AuthModule,
     UserModule,
+    TaskModule,
+    FollowerModule,
     ConfigModule.forRoot({ envFilePath }),
     TypeOrmModule.forRoot({
       type: 'postgres',

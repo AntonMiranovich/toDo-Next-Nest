@@ -6,15 +6,25 @@ import { iTask } from '../../interfaces'
 import style from './home.module.scss'
 
 const Home: React.FC = () => {
-	const [task, setTask] = useState({ taitle: '', description: '' })
+	const getParams: any = localStorage.getItem('userParams')
+	const userParams = JSON.parse(getParams)
+
+	const [task, setTask] = useState({
+		title: '',
+		user_id: `${userParams.id}`,
+		description: '',
+	})
+
 	const [listTasks, setListTasks] = useState<iTask[]>([])
 	const [open, setOpen] = useState<boolean>(false)
 	const [active, setActive] = useState({
-		_id: '',
-		taitle: '',
+		id: '',
+		title: '',
+		user_id: `${userParams.id}`,
 		description: '',
 		isCheck: false,
 	})
+
 
 	function swapCheckbox(index: number) {
 		const updatedTasks = [...listTasks]
@@ -29,22 +39,18 @@ const Home: React.FC = () => {
 	const addTask = async () => {
 		try {
 			const res = await axios.post('http://localhost:5000/task', task)
-			console.log(res)
 		} catch (err) {
 			console.log(err)
 		}
 	}
 	const getItemsList = async () => {
-		try {
-			const res = await axios.get('http://localhost:5000/task')
-			const listTaskCheck = res.data.map((el: iTask) => ({
-				...el,
-				isCheck: false,
-			}))
-			setListTasks(listTaskCheck)
-		} catch (err) {
-			console.log(err)
-		}
+		const res = await axios.get(`http://localhost:5000/task/${userParams.id}`)
+
+		const listTaskCheck = res.data.map((el: iTask) => ({
+			...el,
+			isCheck: false,
+		}))
+		setListTasks(listTaskCheck)
 	}
 
 	useEffect(() => {
@@ -52,27 +58,23 @@ const Home: React.FC = () => {
 	}, [])
 
 	const deleteItem = async (id: string) => {
-		try {
-			const res = await axios.delete(`http://localhost:5000/task/${id}`)
-			console.log(res)
-			const newListItems = listTasks.filter((item: any) => item._id !== id)
-			setListTasks(newListItems)
-		} catch (err) {
-			console.log(err)
-		}
+		const res = await axios.delete(`http://localhost:5000/task/${id}`)
+		const newListItems = listTasks.filter((item: any) => item.id !== id)
+		setListTasks(newListItems)
 	}
 
 	return (
 		<>
 			<div className={style.wrapper}>
 				<h1>TODO LIST</h1>
+				<h1>user:{userParams.name}</h1>
 				<form className={style.header} onSubmit={() => addTask()}>
 					<input
 						type='text'
-						name='taitle'
+						name='title'
 						placeholder='Create note...'
 						onChange={changeInput}
-						value={task?.taitle}
+						value={task?.title}
 					/>
 					<input
 						type='text'
@@ -91,7 +93,7 @@ const Home: React.FC = () => {
 				) : (
 					<div className={style.toDoListItems}>
 						{listTasks.map((item, index) => (
-							<div className={style.todoItemWrap} key={item._id}>
+							<div className={style.todoItemWrap} key={item.id}>
 								<div className={style.todoItem}>
 									<>
 										<input
@@ -107,7 +109,7 @@ const Home: React.FC = () => {
 												listTasks[index].isCheck ? style.checked : style.def
 											}
 										>
-											{item.taitle}
+											{item.title}
 										</p>
 										<p
 											className={
@@ -130,7 +132,7 @@ const Home: React.FC = () => {
 										<button
 											className={style.deleteItem}
 											onClick={() => {
-												deleteItem(item._id)
+												deleteItem(item.id)
 											}}
 										></button>
 									</>
